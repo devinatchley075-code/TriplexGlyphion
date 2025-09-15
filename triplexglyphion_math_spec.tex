@@ -1,0 +1,103 @@
+
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{TriplexGlyphion Mathematical Specification}
+\author{Architect's Console of Creation}
+\date{\today}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+
+\begin{document}
+\maketitle
+
+\section{Preliminaries}
+Let $x \in \{0,1\}^*$ be a byte sequence. Hash function $\mathsf{H}$ denotes SHA-256. The Codex lineage is a directed acyclic graph $G=(V,E)$.
+
+\section{Entropy Reduction Score (ERS)}
+\begin{definition}
+Given raw $r$ and compressed $c$, the ERS is
+\[
+\mathrm{ERS}(r,c)=\mathrm{clamp}_{[0,1]}\left(\frac{\hat{H}(r)-\hat{H}(c)}{\max(\hat{H}(r),\varepsilon)}\right).
+\]
+\end{definition}
+
+\begin{lemma}
+$0 \le \mathrm{ERS}(r,c) \le 1$.
+\end{lemma}
+
+\begin{proposition}[Noise monotonicity]
+Adding i.i.d.\ uniform noise increases expected entropy, so $\mathrm{ERS}$ is non-decreasing under noise-invariant compression.
+\end{proposition}
+
+\section{Semantic Integrity Score (SIS)}
+\begin{definition}
+\[\mathrm{SIS}_{\mathrm{Jac}}(r,c)=\frac{|S_r \cap S_c|}{|S_r \cup S_c|}, \quad 
+\mathrm{SIS}_{\cos}(r,c)=\frac{\langle v_r,v_c\rangle}{\|v_r\|\|v_c\|}.\]
+\end{definition}
+
+\begin{lemma}
+Both scores lie in $[0,1]$ and equal 1 iff semantics are identical.
+\end{lemma}
+
+\section{Glyphic Loss/Proximity Index (GLPI)}
+\begin{definition}
+GLPI is based on weighted Damerau--Levenshtein distance $\mathrm{DL}_L(g,h)$:
+\[\mathrm{GLPI}(g,h) = 1 - \frac{\mathrm{DL}_L(g,h)}{\alpha(m+n)}.\]
+\end{definition}
+
+\begin{lemma}
+$0 \le \mathrm{GLPI} \le 1$, with 1 iff sequences are identical.
+\end{lemma}
+
+\begin{theorem}[Pseudometric]
+$\delta(g,h)=1-\mathrm{GLPI}(g,h)$ is a pseudometric. Triangle inequality holds up to a slack depending on $\tau/\alpha$ and $\lambda$.
+\end{theorem}
+
+\section{Mutation Utility}
+\begin{definition}
+Utility gain is
+\[\Delta u = (\mathrm{ERS}_1-\mathrm{ERS}_0)+\beta(\mathrm{GLPI}_1-\mathrm{GLPI}_0).\]
+Mutation is allowed if peak metrics are not regressed and $\Delta u \ge 0$.
+\end{definition}
+
+\begin{theorem}[Ledger monotonicity]
+Utility sequence recorded in ledger is non-decreasing under mutation policy.
+\end{theorem}
+
+\section{Streaming ZIP Determinism}
+\begin{theorem}
+Deterministic lexicographic ordering and canonicalization guarantee identical artifact hashes across runs.
+\end{theorem}
+
+\section{Merkle Ledger}
+\begin{theorem}[Inclusion soundness]
+Merkle proofs guarantee membership, assuming SHA-256 collision resistance.
+\end{theorem}
+
+\section{EKG Anomaly Detection}
+\begin{theorem}[Replay rejection]
+With monotone sequence numbers, duplicate or out-of-window packets are rejected deterministically.
+\end{theorem}
+
+\section{GlyComm Envelope}
+\begin{theorem}[Unforgeability]
+If signature scheme is EUF-CMA secure, envelopes are unforgeable except with negligible probability.
+\end{theorem}
+
+\section{Coupling of Metrics}
+\begin{proposition}
+If concept-to-glyph mapping is Lipschitz, then low semantic drift (high SIS) implies bounded GLPI loss.
+\end{proposition}
+
+\section{CI Invariant}
+\begin{theorem}[No-regression invariant]
+If CI passes with peak-locked gates, metrics are Pareto-non-worse than historical peaks, and artifacts are deterministic.
+\end{theorem}
+
+\end{document}
